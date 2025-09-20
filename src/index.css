@@ -1,0 +1,158 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* MarkFix Digital Marketing Agency Design System
+All colors MUST be HSL for proper theming support.
+Professional agency aesthetic with trust-building colors.
+*/
+
+@layer base {
+  :root {
+    /* Core Backgrounds */
+    --background: 0 0% 100%;
+    --foreground: 214 32% 20%;
+
+    /* Card System */
+    --card: 0 0% 100%;
+    --card-foreground: 214 32% 20%;
+
+    /* Popover System */
+    --popover: 0 0% 100%;
+    --popover-foreground: 214 32% 20%;
+
+    /* Primary Brand - Deep Professional Blue */
+    --primary: 214 84% 25%;
+    --primary-foreground: 0 0% 98%;
+    --primary-hover: 214 84% 20%;
+
+    /* Secondary - Creative Purple */
+    --secondary: 259 84% 35%;
+    --secondary-foreground: 0 0% 98%;
+    --secondary-hover: 259 84% 30%;
+
+    /* Muted Tones */
+    --muted: 214 32% 96%;
+    --muted-foreground: 214 32% 45%;
+
+    /* Accent - Energy Orange */
+    --accent: 24 95% 55%;
+    --accent-foreground: 0 0% 98%;
+    --accent-hover: 24 95% 50%;
+
+    /* Success - Professional Green */
+    --success: 142 76% 35%;
+    --success-foreground: 0 0% 98%;
+
+    /* Destructive */
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
+
+    /* Borders & Inputs */
+    --border: 214 32% 88%;
+    --input: 214 32% 88%;
+    --ring: 214 84% 25%;
+
+    --radius: 0.75rem;
+
+    /* Professional Gradients */
+    --gradient-hero: linear-gradient(135deg, hsl(214 84% 25%), hsl(259 84% 35%));
+    --gradient-accent: linear-gradient(135deg, hsl(24 95% 55%), hsl(24 95% 45%));
+    --gradient-subtle: linear-gradient(180deg, hsl(214 32% 98%), hsl(214 32% 96%));
+
+    /* Elevated Shadows */
+    --shadow-elegant: 0 10px 25px -5px hsl(214 84% 25% / 0.15);
+    --shadow-card: 0 4px 12px -2px hsl(214 84% 25% / 0.08);
+    --shadow-glow: 0 0 40px hsl(24 95% 55% / 0.3);
+
+    /* Smooth Transitions */
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-bounce: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+
+    /* Sidebar System */
+    --sidebar-background: 214 32% 96%;
+    --sidebar-foreground: 214 32% 20%;
+    --sidebar-primary: 214 84% 25%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 214 32% 92%;
+    --sidebar-accent-foreground: 214 32% 20%;
+    --sidebar-border: 214 32% 88%;
+    --sidebar-ring: 214 84% 25%;
+  }
+
+  .dark {
+    /* Core Backgrounds - Dark Theme */
+    --background: 214 32% 8%;
+    --foreground: 214 32% 95%;
+
+    /* Card System - Dark */
+    --card: 214 32% 12%;
+    --card-foreground: 214 32% 95%;
+
+    /* Popover System - Dark */
+    --popover: 214 32% 12%;
+    --popover-foreground: 214 32% 95%;
+
+    /* Primary Brand - Lighter in dark mode */
+    --primary: 214 84% 60%;
+    --primary-foreground: 214 32% 8%;
+    --primary-hover: 214 84% 55%;
+
+    /* Secondary - Vibrant purple in dark */
+    --secondary: 259 84% 65%;
+    --secondary-foreground: 214 32% 8%;
+    --secondary-hover: 259 84% 60%;
+
+    /* Muted Tones - Dark */
+    --muted: 214 32% 18%;
+    --muted-foreground: 214 32% 65%;
+
+    /* Accent - Bright orange in dark */
+    --accent: 24 95% 60%;
+    --accent-foreground: 214 32% 8%;
+    --accent-hover: 24 95% 55%;
+
+    /* Success - Bright green */
+    --success: 142 76% 50%;
+    --success-foreground: 214 32% 8%;
+
+    /* Destructive */
+    --destructive: 0 84% 65%;
+    --destructive-foreground: 214 32% 8%;
+
+    /* Borders & Inputs - Dark */
+    --border: 214 32% 20%;
+    --input: 214 32% 20%;
+    --ring: 214 84% 60%;
+
+    /* Dark Mode Gradients */
+    --gradient-hero: linear-gradient(135deg, hsl(214 84% 35%), hsl(259 84% 45%));
+    --gradient-accent: linear-gradient(135deg, hsl(24 95% 60%), hsl(24 95% 50%));
+    --gradient-subtle: linear-gradient(180deg, hsl(214 32% 12%), hsl(214 32% 8%));
+
+    /* Dark Mode Shadows */
+    --shadow-elegant: 0 10px 25px -5px hsl(0 0% 0% / 0.3);
+    --shadow-card: 0 4px 12px -2px hsl(0 0% 0% / 0.2);
+    --shadow-glow: 0 0 40px hsl(24 95% 55% / 0.4);
+
+    /* Dark Sidebar */
+    --sidebar-background: 214 32% 10%;
+    --sidebar-foreground: 214 32% 95%;
+    --sidebar-primary: 214 84% 60%;
+    --sidebar-primary-foreground: 214 32% 8%;
+    --sidebar-accent: 214 32% 15%;
+    --sidebar-accent-foreground: 214 32% 95%;
+    --sidebar-border: 214 32% 20%;
+    --sidebar-ring: 214 84% 60%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+}
