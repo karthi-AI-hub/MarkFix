@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ArrowRight, Instagram, Facebook, Linkedin, MessageSquare, Zap, Users, BarChart3, CheckCircle, Play, Calendar, Target, Bot } from "lucide-react";
+import SEOHead from "@/components/seo/SEOHead";
+import { productSchema } from "@/components/seo/StructuredData";
 
 const Products = () => {
   const productPricingPlans = [
@@ -152,17 +154,25 @@ const Products = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEOHead
+        title="Social Media Automation Tools | Instagram Facebook LinkedIn WhatsApp - MarkFix"
+        description="Professional social media automation tools for Instagram, Facebook, LinkedIn, and WhatsApp. AI-powered automation for freelancers, influencers, and digital marketing agencies. Save 80% time with our automation products."
+        keywords="social media automation tools, Instagram automation, Facebook automation, LinkedIn automation, WhatsApp automation, marketing automation software, social media management tools, automated marketing solutions, digital marketing tools"
+        canonicalUrl="https://markfix.in/products"
+        structuredData={productSchema}
+      />
+      
       <Navigation />
       
       <main className="pt-16">
         {/* Hero Section */}
-        <section className="bg-gradient-subtle py-20">
+        <section className="bg-gradient-subtle py-20" aria-label="Social Media Automation Products">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <h1 className="text-4xl md:text-6xl font-bold mb-6">
-              Automation <span className="bg-gradient-hero bg-clip-text text-transparent">Products</span>
+              Social Media <span className="bg-gradient-hero bg-clip-text text-transparent">Automation Products</span> | Instagram | Facebook | LinkedIn | WhatsApp
             </h1>
             <p className="text-xl text-muted-foreground max-w-3xl mx-auto mb-8">
-              Powerful automation tools designed to streamline your social media management, maximize marketing efficiency, and deliver measurable results.
+              Powerful social media automation tools designed to streamline your Instagram automation, Facebook automation, LinkedIn automation, and WhatsApp automation. Perfect for freelancers, influencers, and digital marketing agencies seeking maximum efficiency and measurable results.
             </p>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
               <div className="flex items-center justify-center space-x-2">
@@ -182,8 +192,14 @@ const Products = () => {
         </section>
 
         {/* Products Grid */}
-        <section className="py-20">
+        <section className="py-20" aria-label="Social Media Automation Tools">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-16">
+              <h2 className="text-3xl md:text-4xl font-bold mb-4">Advanced Social Media Automation Tools for Freelancers & Agencies</h2>
+              <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+                Professional automation tools trusted by digital marketing freelancers, influencers, and agencies worldwide.
+              </p>
+            </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               {products.map((product, index) => {
                 const IconComponent = product.icon;

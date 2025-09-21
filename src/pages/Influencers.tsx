@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -5,12 +6,153 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
+import { useToast } from "@/components/ui/use-toast";
 import Navigation from "@/components/ui/navigation";
 import Footer from "@/components/ui/footer";
 import ScrollToTop from "@/components/scroll-to-top";
 import { Instagram, Youtube, Linkedin, Twitter, TrendingUp, Users, Star, DollarSign } from "lucide-react";
+import { addInfluencerSubmission } from "@/services/firebaseService";
 
 const Influencers = () => {
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    city: "",
+    primaryPlatform: "",
+    followerCount: "",
+    socialMediaLinks: {
+      instagram: "",
+      youtube: "",
+      linkedin: "",
+      twitter: ""
+    },
+    niche: "",
+    contentType: "",
+    portfolio: "",
+    experience: "",
+    availability: "",
+    bio: "",
+    consent: false
+  });
+  const [isLoading, setIsLoading] = useState(false);
+  const { toast } = useToast();
+
+  // Handle input changes
+  const handleInputChange = (field: string, value: string) => {
+    if (field.startsWith('socialMediaLinks.')) {
+      const platform = field.split('.')[1];
+      setFormData(prev => ({
+        ...prev,
+        socialMediaLinks: {
+          ...prev.socialMediaLinks,
+          [platform]: value
+        }
+      }));
+    } else {
+      setFormData(prev => ({
+        ...prev,
+        [field]: value
+      }));
+    }
+  };
+
+  // Handle form submission
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!formData.name || !formData.email || !formData.phone || !formData.city || 
+        !formData.primaryPlatform || !formData.followerCount || !formData.niche || 
+        !formData.contentType || !formData.availability || !formData.bio) {
+      toast({
+        title: "Missing Required Fields",
+        description: "Please fill in all required fields marked with *",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!formData.consent) {
+      toast({
+        title: "Consent Required",
+        description: "Please agree to the terms and conditions to proceed.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Email validation
+    if (!formData.email.includes("@")) {
+      toast({
+        title: "Invalid Email",
+        description: "Please enter a valid email address.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      const submissionData = {
+        name: formData.name,
+        email: formData.email,
+        phone: formData.phone,
+        city: formData.city,
+        primaryPlatform: formData.primaryPlatform,
+        followerCount: formData.followerCount,
+        socialMediaLinks: formData.socialMediaLinks,
+        niche: formData.niche,
+        contentType: formData.contentType,
+        portfolio: formData.portfolio || undefined,
+        experience: formData.experience,
+        availability: formData.availability,
+        bio: formData.bio,
+        status: 'new' as const,
+        source: 'influencers-page' as const,
+      };
+
+      await addInfluencerSubmission(submissionData);
+      
+      // Reset form
+      setFormData({
+        name: "",
+        email: "",
+        phone: "",
+        city: "",
+        primaryPlatform: "",
+        followerCount: "",
+        socialMediaLinks: {
+          instagram: "",
+          youtube: "",
+          linkedin: "",
+          twitter: ""
+        },
+        niche: "",
+        contentType: "",
+        portfolio: "",
+        experience: "",
+        availability: "",
+        bio: "",
+        consent: false
+      });
+
+      toast({
+        title: "Application Submitted Successfully!",
+        description: "We'll review your application and get back to you within 48 hours.",
+      });
+    } catch (error) {
+      console.error('Form submission error:', error);
+      toast({
+        title: "Submission Failed",
+        description: "Please try again later or contact us directly.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const platforms = [
     { name: "Instagram", icon: Instagram, followers: "10K-1M+" },
     { name: "YouTube", icon: Youtube, followers: "5K-500K+" },
@@ -129,26 +271,55 @@ const Influencers = () => {
 
             <Card className="border-2 border-primary/20">
               <CardContent className="p-6">
-                <form className="space-y-6">
+                <form onSubmit={handleSubmit} className="space-y-6">
                   {/* Personal Information */}
                   <div>
                     <h3 className="text-2xl font-semibold mb-4">Personal Information</h3>
                     <div className="grid md:grid-cols-2 gap-6">
                       <div className="space-y-2">
                         <Label htmlFor="fullName">Full Name *</Label>
-                        <Input id="fullName" placeholder="Enter your full name" />
+                        <Input 
+                          id="fullName" 
+                          placeholder="Enter your full name"
+                          value={formData.name}
+                          onChange={(e) => handleInputChange('name', e.target.value)}
+                          disabled={isLoading}
+                          required
+                        />
                       </div>
                       <div className="space-y-2">
                         <Label htmlFor="email">Email Address *</Label>
-                        <Input id="email" type="email" placeholder="your@email.com" />
+                        <Input 
+                          id="email" 
+                          type="email" 
+                          placeholder="your@email.com"
+                          value={formData.email}
+                          onChange={(e) => handleInputChange('email', e.target.value)}
+                          disabled={isLoading}
+                          required
+                        />
                       </div>
                       <div className="space-y-2">
                         <Label htmlFor="phone">Phone Number *</Label>
-                        <Input id="phone" placeholder="+91 XXXXX XXXXX" />
+                        <Input 
+                          id="phone" 
+                          placeholder="+91 XXXXX XXXXX"
+                          value={formData.phone}
+                          onChange={(e) => handleInputChange('phone', e.target.value)}
+                          disabled={isLoading}
+                          required
+                        />
                       </div>
                       <div className="space-y-2">
                         <Label htmlFor="city">City *</Label>
-                        <Input id="city" placeholder="Your city" />
+                        <Input 
+                          id="city" 
+                          placeholder="Your city"
+                          value={formData.city}
+                          onChange={(e) => handleInputChange('city', e.target.value)}
+                          disabled={isLoading}
+                          required
+                        />
                       </div>
                     </div>
                   </div>
@@ -159,7 +330,11 @@ const Influencers = () => {
                     <div className="grid md:grid-cols-2 gap-6">
                       <div className="space-y-2">
                         <Label htmlFor="primaryPlatform">Primary Platform *</Label>
-                        <Select>
+                        <Select 
+                          value={formData.primaryPlatform} 
+                          onValueChange={(value) => handleInputChange('primaryPlatform', value)}
+                          disabled={isLoading}
+                        >
                           <SelectTrigger>
                             <SelectValue placeholder="Select primary platform" />
                           </SelectTrigger>
@@ -174,7 +349,11 @@ const Influencers = () => {
                       </div>
                       <div className="space-y-2">
                         <Label htmlFor="followers">Total Followers *</Label>
-                        <Select>
+                        <Select 
+                          value={formData.followerCount} 
+                          onValueChange={(value) => handleInputChange('followerCount', value)}
+                          disabled={isLoading}
+                        >
                           <SelectTrigger>
                             <SelectValue placeholder="Select follower range" />
                           </SelectTrigger>
@@ -193,10 +372,30 @@ const Influencers = () => {
                     <div className="space-y-4 mt-6">
                       <Label>Social Media Links</Label>
                       <div className="grid md:grid-cols-2 gap-4">
-                        <Input placeholder="Instagram profile URL" />
-                        <Input placeholder="YouTube channel URL" />
-                        <Input placeholder="LinkedIn profile URL" />
-                        <Input placeholder="Twitter profile URL" />
+                        <Input 
+                          placeholder="Instagram profile URL"
+                          value={formData.socialMediaLinks.instagram}
+                          onChange={(e) => handleInputChange('socialMediaLinks.instagram', e.target.value)}
+                          disabled={isLoading}
+                        />
+                        <Input 
+                          placeholder="YouTube channel URL"
+                          value={formData.socialMediaLinks.youtube}
+                          onChange={(e) => handleInputChange('socialMediaLinks.youtube', e.target.value)}
+                          disabled={isLoading}
+                        />
+                        <Input 
+                          placeholder="LinkedIn profile URL"
+                          value={formData.socialMediaLinks.linkedin}
+                          onChange={(e) => handleInputChange('socialMediaLinks.linkedin', e.target.value)}
+                          disabled={isLoading}
+                        />
+                        <Input 
+                          placeholder="Twitter profile URL"
+                          value={formData.socialMediaLinks.twitter}
+                          onChange={(e) => handleInputChange('socialMediaLinks.twitter', e.target.value)}
+                          disabled={isLoading}
+                        />
                       </div>
                     </div>
                   </div>
@@ -207,7 +406,11 @@ const Influencers = () => {
                     <div className="grid md:grid-cols-2 gap-6">
                       <div className="space-y-2">
                         <Label htmlFor="niche">Content Niche *</Label>
-                        <Select>
+                        <Select 
+                          value={formData.niche} 
+                          onValueChange={(value) => handleInputChange('niche', value)}
+                          disabled={isLoading}
+                        >
                           <SelectTrigger>
                             <SelectValue placeholder="Select your niche" />
                           </SelectTrigger>
@@ -225,7 +428,11 @@ const Influencers = () => {
                       </div>
                       <div className="space-y-2">
                         <Label htmlFor="contentType">Content Type *</Label>
-                        <Select>
+                        <Select 
+                          value={formData.contentType} 
+                          onValueChange={(value) => handleInputChange('contentType', value)}
+                          disabled={isLoading}
+                        >
                           <SelectTrigger>
                             <SelectValue placeholder="Select content type" />
                           </SelectTrigger>
@@ -242,7 +449,13 @@ const Influencers = () => {
 
                     <div className="space-y-2 mt-6">
                       <Label htmlFor="portfolio">Portfolio/Media Kit URL</Label>
-                      <Input id="portfolio" placeholder="Link to your portfolio or media kit" />
+                      <Input 
+                        id="portfolio" 
+                        placeholder="Link to your portfolio or media kit"
+                        value={formData.portfolio}
+                        onChange={(e) => handleInputChange('portfolio', e.target.value)}
+                        disabled={isLoading}
+                      />
                     </div>
                   </div>
 
@@ -252,7 +465,11 @@ const Influencers = () => {
                     <div className="grid md:grid-cols-2 gap-6">
                       <div className="space-y-2">
                         <Label htmlFor="experience">Influencer Experience</Label>
-                        <Select>
+                        <Select 
+                          value={formData.experience} 
+                          onValueChange={(value) => handleInputChange('experience', value)}
+                          disabled={isLoading}
+                        >
                           <SelectTrigger>
                             <SelectValue placeholder="Select experience level" />
                           </SelectTrigger>
@@ -265,7 +482,11 @@ const Influencers = () => {
                       </div>
                       <div className="space-y-2">
                         <Label htmlFor="availability">Availability *</Label>
-                        <Select>
+                        <Select 
+                          value={formData.availability} 
+                          onValueChange={(value) => handleInputChange('availability', value)}
+                          disabled={isLoading}
+                        >
                           <SelectTrigger>
                             <SelectValue placeholder="Select availability" />
                           </SelectTrigger>
@@ -284,20 +505,34 @@ const Influencers = () => {
                         id="bio" 
                         placeholder="Describe your content style, audience demographics, and why you'd be a great fit for brand partnerships..."
                         className="min-h-[120px]"
+                        value={formData.bio}
+                        onChange={(e) => handleInputChange('bio', e.target.value)}
+                        disabled={isLoading}
+                        required
                       />
                     </div>
                   </div>
 
                   {/* Consent */}
                   <div className="flex items-center space-x-2">
-                    <Checkbox id="consent" />
+                    <Checkbox 
+                      id="consent"
+                      checked={formData.consent}
+                      onCheckedChange={(checked) => setFormData(prev => ({ ...prev, consent: !!checked }))}
+                      disabled={isLoading}
+                    />
                     <Label htmlFor="consent" className="text-sm">
                       I agree to MarkFix's terms and conditions and consent to being contacted about partnership opportunities *
                     </Label>
                   </div>
 
-                  <Button type="submit" size="lg" className="w-full text-lg">
-                    Submit Application
+                  <Button 
+                    type="submit" 
+                    size="lg" 
+                    className="w-full text-lg"
+                    disabled={isLoading}
+                  >
+                    {isLoading ? "Submitting Application..." : "Submit Application"}
                   </Button>
                 </form>
               </CardContent>

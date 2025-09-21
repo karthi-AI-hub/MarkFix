@@ -12,6 +12,7 @@ import Newsletter from "@/components/newsletter";
 import ScrollToTop from "@/components/scroll-to-top";
 import { useToast } from "@/components/ui/use-toast";
 import { Mail, Phone, MapPin, Clock, MessageCircle, Send, CheckCircle, Globe, Users, Headphones, Calendar, TrendingUp, Zap } from "lucide-react";
+import { addContactSubmission } from "@/services/firebaseService";
 
 const Contact = () => {
   const [formData, setFormData] = useState({
@@ -48,11 +49,32 @@ const Contact = () => {
       return;
     }
 
+    // Email validation
+    if (!formData.email.includes("@")) {
+      toast({
+        title: "Invalid Email",
+        description: "Please enter a valid email address.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
-      // Simulate form submission - replace with actual API call
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      const submissionData = {
+        name: formData.name,
+        email: formData.email,
+        phone: formData.phone || undefined,
+        company: formData.company || undefined,
+        service: formData.service || undefined,
+        budget: formData.budget || undefined,
+        message: formData.message,
+        status: 'new' as const,
+        source: 'contact-page' as const,
+      };
+
+      await addContactSubmission(submissionData);
       
       toast({
         title: "Message Sent Successfully!",
@@ -70,6 +92,7 @@ const Contact = () => {
         message: "",
       });
     } catch (error) {
+      console.error('Contact form submission error:', error);
       toast({
         title: "Failed to Send Message",
         description: "Please try again or contact us directly.",

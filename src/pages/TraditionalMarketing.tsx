@@ -1,15 +1,110 @@
+import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useToast } from "@/components/ui/use-toast";
 import Navigation from "@/components/ui/navigation";
 import Footer from "@/components/ui/footer";
 import ScrollToTop from "@/components/scroll-to-top";
 import { Truck, Zap, MapPin, Clock, Users, Target } from "lucide-react";
+import { addTraditionalMarketingSubmission } from "@/services/firebaseService";
 
 const TraditionalMarketing = () => {
+  // Form state management
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    company: "",
+    serviceType: "",
+    preferredPackage: "",
+    targetLocations: "",
+    campaignDetails: ""
+  });
+  const [isLoading, setIsLoading] = useState(false);
+  const { toast } = useToast();
+
+  // Handle input changes
+  const handleInputChange = (field: string, value: string) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
+  // Handle form submission
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    // Basic validation
+    if (!formData.name || !formData.email || !formData.phone || !formData.campaignDetails) {
+      toast({
+        title: "Missing Required Fields",
+        description: "Please fill in all required fields marked with *",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Email validation
+    if (!formData.email.includes("@")) {
+      toast({
+        title: "Invalid Email",
+        description: "Please enter a valid email address.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      const submissionData = {
+        name: formData.name,
+        email: formData.email,
+        phone: formData.phone,
+        company: formData.company || undefined,
+        serviceType: formData.serviceType || undefined,
+        preferredPackage: formData.preferredPackage || undefined,
+        targetLocations: formData.targetLocations || undefined,
+        campaignDetails: formData.campaignDetails,
+        status: 'new' as const,
+        source: 'traditional-marketing-page' as const,
+      };
+
+      await addTraditionalMarketingSubmission(submissionData);
+      
+      // Reset form
+      setFormData({
+        name: "",
+        email: "",
+        phone: "",
+        company: "",
+        serviceType: "",
+        preferredPackage: "",
+        targetLocations: "",
+        campaignDetails: ""
+      });
+
+      toast({
+        title: "Quote Request Submitted!",
+        description: "We'll get back to you within 24 hours with a custom quote tailored to your needs.",
+      });
+    } catch (error) {
+      console.error('Form submission error:', error);
+      toast({
+        title: "Submission Failed",
+        description: "Please try again later or contact us directly.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const packages = [
     {
       name: "Bronze Package",
@@ -205,33 +300,65 @@ const TraditionalMarketing = () => {
 
             <Card className="border-2 border-primary/20">
               <CardContent className="p-8">
-                <form className="space-y-6">
+                <form onSubmit={handleSubmit} className="space-y-6">
                   <div className="grid md:grid-cols-2 gap-6">
                     <div className="space-y-2">
                       <Label htmlFor="name">Full Name *</Label>
-                      <Input id="name" placeholder="Enter your full name" />
+                      <Input 
+                        id="name" 
+                        placeholder="Enter your full name"
+                        value={formData.name}
+                        onChange={(e) => handleInputChange('name', e.target.value)}
+                        disabled={isLoading}
+                        required
+                      />
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="email">Email Address *</Label>
-                      <Input id="email" type="email" placeholder="your@email.com" />
+                      <Input 
+                        id="email" 
+                        type="email" 
+                        placeholder="your@email.com"
+                        value={formData.email}
+                        onChange={(e) => handleInputChange('email', e.target.value)}
+                        disabled={isLoading}
+                        required
+                      />
                     </div>
                   </div>
 
                   <div className="grid md:grid-cols-2 gap-6">
                     <div className="space-y-2">
                       <Label htmlFor="phone">Phone Number *</Label>
-                      <Input id="phone" placeholder="+91 XXXXX XXXXX" />
+                      <Input 
+                        id="phone" 
+                        placeholder="+91 XXXXX XXXXX"
+                        value={formData.phone}
+                        onChange={(e) => handleInputChange('phone', e.target.value)}
+                        disabled={isLoading}
+                        required
+                      />
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="company">Company Name</Label>
-                      <Input id="company" placeholder="Your company name" />
+                      <Input 
+                        id="company" 
+                        placeholder="Your company name"
+                        value={formData.company}
+                        onChange={(e) => handleInputChange('company', e.target.value)}
+                        disabled={isLoading}
+                      />
                     </div>
                   </div>
 
                   <div className="grid md:grid-cols-2 gap-6">
                     <div className="space-y-2">
                       <Label htmlFor="service">Service Type *</Label>
-                      <Select>
+                      <Select 
+                        value={formData.serviceType} 
+                        onValueChange={(value) => handleInputChange('serviceType', value)}
+                        disabled={isLoading}
+                      >
                         <SelectTrigger>
                           <SelectValue placeholder="Select service type" />
                         </SelectTrigger>
@@ -244,7 +371,11 @@ const TraditionalMarketing = () => {
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="package">Preferred Package</Label>
-                      <Select>
+                      <Select 
+                        value={formData.preferredPackage} 
+                        onValueChange={(value) => handleInputChange('preferredPackage', value)}
+                        disabled={isLoading}
+                      >
                         <SelectTrigger>
                           <SelectValue placeholder="Select package" />
                         </SelectTrigger>
@@ -260,7 +391,13 @@ const TraditionalMarketing = () => {
 
                   <div className="space-y-2">
                     <Label htmlFor="locations">Target Locations</Label>
-                    <Input id="locations" placeholder="Cities/areas you want to target" />
+                    <Input 
+                      id="locations" 
+                      placeholder="Cities/areas you want to target"
+                      value={formData.targetLocations}
+                      onChange={(e) => handleInputChange('targetLocations', e.target.value)}
+                      disabled={isLoading}
+                    />
                   </div>
 
                   <div className="space-y-2">
@@ -269,11 +406,20 @@ const TraditionalMarketing = () => {
                       id="message" 
                       placeholder="Tell us about your campaign objectives, target audience, preferred dates, and any specific requirements..."
                       className="min-h-[120px]"
+                      value={formData.campaignDetails}
+                      onChange={(e) => handleInputChange('campaignDetails', e.target.value)}
+                      disabled={isLoading}
+                      required
                     />
                   </div>
 
-                  <Button type="submit" size="lg" className="w-full text-lg">
-                    Get Custom Quote
+                  <Button 
+                    type="submit" 
+                    size="lg" 
+                    className="w-full text-lg"
+                    disabled={isLoading}
+                  >
+                    {isLoading ? "Submitting..." : "Get Custom Quote"}
                   </Button>
                 </form>
               </CardContent>

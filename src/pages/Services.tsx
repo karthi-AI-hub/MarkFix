@@ -6,12 +6,14 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ArrowRight, User, TrendingUp, PenTool, Share2, Search, Palette, CheckCircle, Star } from "lucide-react";
+import SEOHead from "@/components/seo/SEOHead";
+import { serviceSchema, freelancingJobSchema } from "@/components/seo/StructuredData";
 
 const Services = () => {
   const servicePricingPlans = [
     {
       name: "Starter",
-      price: "₹XXX",
+      price: "xxx",
       period: "month",
       description: "Perfect for small businesses starting their digital journey",
       features: [
@@ -27,7 +29,7 @@ const Services = () => {
     },
     {
       name: "Professional",
-      price: "₹XXX",
+      price: "xxx",
       period: "month",
       description: "Comprehensive solution for growing businesses",
       features: [
@@ -45,7 +47,7 @@ const Services = () => {
     },
     {
       name: "Enterprise",
-      price: "₹XXX",
+      price: "xxx",
       period: "month",
       description: "Full-scale digital marketing for established businesses",
       features: [
@@ -67,61 +69,69 @@ const Services = () => {
   const services = [
     {
       icon: User,
-      title: "Personal Branding",
-      description: "Build a powerful personal brand that stands out in your industry and attracts opportunities.",
-      features: ["Brand Identity Design", "Content Strategy", "Online Presence Optimization", "Reputation Management"],
+      title: "Personal Branding & Freelancer Development",
+      description: "Build a powerful personal brand that attracts freelancing opportunities and establishes your authority in digital marketing.",
+      features: ["Freelancer Profile Optimization", "Personal Brand Strategy", "LinkedIn Profile Enhancement", "Portfolio Development"],
       popular: false,
     },
     {
       icon: TrendingUp,
-      title: "Brand Strategy Building",
-      description: "Develop comprehensive brand strategies that drive growth and market positioning.",
-      features: ["Market Analysis", "Competitive Research", "Brand Positioning", "Growth Strategy"],
+      title: "Digital Marketing Strategy & Freelancing",
+      description: "Comprehensive digital marketing strategies with access to top freelancers for implementation and scaling.",
+      features: ["Freelancer Network Access", "Digital Strategy Development", "Campaign Management", "Performance Analytics"],
       popular: true,
     },
     {
       icon: PenTool,
-      title: "Content Marketing",
-      description: "Create engaging content that resonates with your audience and drives conversions.",
-      features: ["Content Calendar", "Blog Writing", "Video Production", "Content Distribution"],
+      title: "Content Marketing & Creator Network",
+      description: "Create engaging content with our network of freelance content creators and marketing specialists.",
+      features: ["Freelance Content Writers", "Video Production Network", "Content Strategy", "Multi-platform Distribution"],
       popular: false,
     },
     {
       icon: Share2,
-      title: "Social Media Marketing",
-      description: "Maximize your social media presence with targeted campaigns and engaging content.",
-      features: ["Platform Management", "Campaign Creation", "Community Building", "Influencer Outreach"],
+      title: "Social Media Marketing & Influencer Partnerships",
+      description: "Maximize your social media presence with influencer collaborations and expert freelance social media managers.",
+      features: ["Influencer Matchmaking", "Campaign Management", "Freelance Social Media Managers", "Performance Tracking"],
       popular: false,
     },
     {
       icon: Search,
-      title: "SEO Services",
-      description: "Improve your search engine rankings and drive organic traffic to your website.",
-      features: ["Keyword Research", "On-Page SEO", "Technical Optimization", "Link Building"],
+      title: "SEO Services & Freelance SEO Experts",
+      description: "Improve your search engine rankings with our team of certified freelance SEO specialists and proven strategies.",
+      features: ["Freelance SEO Consultants", "Technical SEO Audit", "Content Optimization", "Local SEO Services"],
       popular: false,
     },
     {
       icon: Palette,
-      title: "Banner & Poster Design",
-      description: "Create eye-catching visuals that communicate your brand message effectively.",
-      features: ["Custom Graphics", "Brand Consistency", "Multi-Format Design", "Print & Digital"],
+      title: "Design Services & Creative Freelancers",
+      description: "Connect with top graphic design freelancers for banner design, branding, and creative marketing materials.",
+      features: ["Freelance Graphic Designers", "Brand Design", "Marketing Collateral", "Social Media Graphics"],
       popular: false,
     },
   ];
 
   return (
     <div className="min-h-screen bg-background">
+      <SEOHead
+        title="Digital Marketing Services | Freelancing Platform | Influencer Marketing - MarkFix"
+        description="Comprehensive digital marketing services with access to top freelancers and influencers. Expert SEO, social media marketing, content creation, and personal branding services in India."
+        keywords="digital marketing services, freelancing platform, influencer marketing, SEO services India, social media marketing, personal branding services, content marketing agency, digital marketing freelancers, brand strategy consulting"
+        canonicalUrl="https://markfix.in/services"
+        structuredData={[serviceSchema, freelancingJobSchema]}
+      />
+      
       <Navigation />
       
       <main className="pt-16">
         {/* Hero Section */}
-        <section className="bg-gradient-subtle py-20">
+        <section className="bg-gradient-subtle py-20" aria-label="Digital Marketing Services Hero">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <h1 className="text-4xl md:text-6xl font-bold mb-6">
-              Our Digital Marketing <span className="bg-gradient-hero bg-clip-text text-transparent">Services</span>
+              Digital Marketing <span className="bg-gradient-hero bg-clip-text text-transparent">Services</span> | Freelancing Platform | Influencer Marketing
             </h1>
             <p className="text-xl text-muted-foreground max-w-3xl mx-auto mb-8">
-              Comprehensive digital marketing solutions designed to elevate your brand, engage your audience, and drive measurable results across all channels.
+              Comprehensive digital marketing services designed to elevate your brand, connect with top freelancers, partner with influencers, and drive measurable results across all channels. India's leading digital marketing agency for businesses and freelancers.
             </p>
             <div className="flex items-center justify-center space-x-8">
               <div className="flex items-center space-x-2">
@@ -130,15 +140,25 @@ const Services = () => {
               </div>
               <div className="flex items-center space-x-2">
                 <CheckCircle className="h-5 w-5 text-success" />
-                <span className="text-sm font-medium">Proven Results</span>
+                <span className="text-sm font-medium">1000+ Freelancers</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <CheckCircle className="h-5 w-5 text-success" />
+                <span className="text-sm font-medium">Top Influencers</span>
               </div>
             </div>
           </div>
         </section>
 
         {/* Services Grid */}
-        <section className="py-20">
+        <section className="py-20" aria-label="Digital Marketing Services Portfolio">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-16">
+              <h2 className="text-3xl md:text-4xl font-bold mb-4">Comprehensive Digital Marketing Services & Freelancing Solutions</h2>
+              <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+                From freelancing opportunities to influencer partnerships and automation tools, we provide end-to-end digital marketing solutions.
+              </p>
+            </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {services.map((service, index) => {
                 const IconComponent = service.icon;

@@ -15,7 +15,9 @@ import About from "./pages/About";
 import Contact from "./pages/Contact";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsConditions from "./pages/TermsConditions";
+import AdminPage from "./pages/AdminPage";
 import NotFound from "./pages/NotFound";
+import LeadCaptureSystem from "./components/lead-capture/LeadCaptureSystem";
 
 const queryClient = new QueryClient();
 
@@ -36,10 +38,12 @@ const App = () => (
           <Route path="/contact" element={<Contact />} />
           <Route path="/privacy-policy" element={<PrivacyPolicy />} />
           <Route path="/terms-conditions" element={<TermsConditions />} />
+          <Route path="/admin" element={<AdminPage />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
+      <LeadCaptureSystem />
       <Analytics />
     </TooltipProvider>
   </QueryClientProvider>

@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -5,12 +6,144 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
+import { useToast } from "@/components/ui/use-toast";
 import Navigation from "@/components/ui/navigation";
 import Footer from "@/components/ui/footer";
 import ScrollToTop from "@/components/scroll-to-top";
 import { Palette, Code, PenTool, Camera, TrendingUp, Clock, DollarSign, Users } from "lucide-react";
+import { addFreelancerSubmission } from "@/services/firebaseService";
 
 const Freelancers = () => {
+  // Form state management
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    location: "",
+    primarySkill: "",
+    experience: "",
+    additionalSkills: [] as string[],
+    portfolio: "",
+    hourlyRate: "",
+    workSamples: "",
+    availability: "",
+    startDate: "",
+    about: "",
+    consent: false
+  });
+  const [isLoading, setIsLoading] = useState(false);
+  const { toast } = useToast();
+
+  // Handle input changes
+  const handleInputChange = (field: string, value: string) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
+  // Handle checkbox changes for additional skills
+  const handleSkillChange = (skill: string, checked: boolean) => {
+    setFormData(prev => ({
+      ...prev,
+      additionalSkills: checked 
+        ? [...prev.additionalSkills, skill]
+        : prev.additionalSkills.filter(s => s !== skill)
+    }));
+  };
+
+  // Handle form submission
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    // Basic validation
+    if (!formData.name || !formData.email || !formData.phone || !formData.location || 
+        !formData.primarySkill || !formData.experience || !formData.portfolio || 
+        !formData.hourlyRate || !formData.availability || !formData.startDate || !formData.about) {
+      toast({
+        title: "Missing Required Fields",
+        description: "Please fill in all required fields marked with *",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!formData.consent) {
+      toast({
+        title: "Consent Required",
+        description: "Please agree to the terms and conditions to proceed.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Email validation
+    if (!formData.email.includes("@")) {
+      toast({
+        title: "Invalid Email",
+        description: "Please enter a valid email address.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      const submissionData = {
+        name: formData.name,
+        email: formData.email,
+        phone: formData.phone,
+        location: formData.location,
+        primarySkill: formData.primarySkill,
+        experience: formData.experience,
+        additionalSkills: formData.additionalSkills,
+        portfolio: formData.portfolio,
+        hourlyRate: formData.hourlyRate,
+        workSamples: formData.workSamples || undefined,
+        availability: formData.availability,
+        startDate: formData.startDate,
+        about: formData.about,
+        status: 'new' as const,
+        source: 'freelancers-page' as const,
+      };
+
+      await addFreelancerSubmission(submissionData);
+      
+      // Reset form
+      setFormData({
+        name: "",
+        email: "",
+        phone: "",
+        location: "",
+        primarySkill: "",
+        experience: "",
+        additionalSkills: [],
+        portfolio: "",
+        hourlyRate: "",
+        workSamples: "",
+        availability: "",
+        startDate: "",
+        about: "",
+        consent: false
+      });
+
+      toast({
+        title: "Application Submitted Successfully!",
+        description: "We'll review your application and get back to you within 48 hours.",
+      });
+    } catch (error) {
+      console.error('Form submission error:', error);
+      toast({
+        title: "Submission Failed",
+        description: "Please try again later or contact us directly.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const skills = [
     { name: "Graphic Design", icon: Palette, demand: "High" },
     { name: "Web Development", icon: Code, demand: "Very High" },
@@ -164,26 +297,55 @@ const Freelancers = () => {
 
             <Card className="border-2 border-primary/20">
               <CardContent className="p-8">
-                <form className="space-y-6">
+                <form onSubmit={handleSubmit} className="space-y-6">
                   {/* Personal Information */}
                   <div>
                     <h3 className="text-2xl font-semibold mb-4">Personal Information</h3>
                     <div className="grid md:grid-cols-2 gap-6">
                       <div className="space-y-2">
                         <Label htmlFor="fullName">Full Name *</Label>
-                        <Input id="fullName" placeholder="Enter your full name" />
+                        <Input 
+                          id="fullName" 
+                          placeholder="Enter your full name"
+                          value={formData.name}
+                          onChange={(e) => handleInputChange('name', e.target.value)}
+                          disabled={isLoading}
+                          required
+                        />
                       </div>
                       <div className="space-y-2">
                         <Label htmlFor="email">Email Address *</Label>
-                        <Input id="email" type="email" placeholder="your@email.com" />
+                        <Input 
+                          id="email" 
+                          type="email" 
+                          placeholder="your@email.com"
+                          value={formData.email}
+                          onChange={(e) => handleInputChange('email', e.target.value)}
+                          disabled={isLoading}
+                          required
+                        />
                       </div>
                       <div className="space-y-2">
                         <Label htmlFor="phone">Phone Number *</Label>
-                        <Input id="phone" placeholder="+91 XXXXX XXXXX" />
+                        <Input 
+                          id="phone" 
+                          placeholder="+91 XXXXX XXXXX"
+                          value={formData.phone}
+                          onChange={(e) => handleInputChange('phone', e.target.value)}
+                          disabled={isLoading}
+                          required
+                        />
                       </div>
                       <div className="space-y-2">
                         <Label htmlFor="location">Location *</Label>
-                        <Input id="location" placeholder="City, Country" />
+                        <Input 
+                          id="location" 
+                          placeholder="City, Country"
+                          value={formData.location}
+                          onChange={(e) => handleInputChange('location', e.target.value)}
+                          disabled={isLoading}
+                          required
+                        />
                       </div>
                     </div>
                   </div>
@@ -194,7 +356,11 @@ const Freelancers = () => {
                     <div className="grid md:grid-cols-2 gap-6">
                       <div className="space-y-2">
                         <Label htmlFor="primarySkill">Primary Skill *</Label>
-                        <Select>
+                        <Select 
+                          value={formData.primarySkill} 
+                          onValueChange={(value) => handleInputChange('primarySkill', value)}
+                          disabled={isLoading}
+                        >
                           <SelectTrigger>
                             <SelectValue placeholder="Select primary skill" />
                           </SelectTrigger>
@@ -212,7 +378,11 @@ const Freelancers = () => {
                       </div>
                       <div className="space-y-2">
                         <Label htmlFor="experience">Years of Experience *</Label>
-                        <Select>
+                        <Select 
+                          value={formData.experience} 
+                          onValueChange={(value) => handleInputChange('experience', value)}
+                          disabled={isLoading}
+                        >
                           <SelectTrigger>
                             <SelectValue placeholder="Select experience level" />
                           </SelectTrigger>
@@ -236,7 +406,12 @@ const Freelancers = () => {
                           "WordPress", "E-commerce", "Project Management"
                         ].map((skill) => (
                           <div key={skill} className="flex items-center space-x-2">
-                            <Checkbox id={skill} />
+                            <Checkbox 
+                              id={skill}
+                              checked={formData.additionalSkills.includes(skill)}
+                              onCheckedChange={(checked) => handleSkillChange(skill, !!checked)}
+                              disabled={isLoading}
+                            />
                             <Label htmlFor={skill} className="text-sm">{skill}</Label>
                           </div>
                         ))}
@@ -250,11 +425,22 @@ const Freelancers = () => {
                     <div className="grid md:grid-cols-2 gap-6">
                       <div className="space-y-2">
                         <Label htmlFor="portfolio">Portfolio URL *</Label>
-                        <Input id="portfolio" placeholder="Link to your portfolio/website" />
+                        <Input 
+                          id="portfolio" 
+                          placeholder="Link to your portfolio/website"
+                          value={formData.portfolio}
+                          onChange={(e) => handleInputChange('portfolio', e.target.value)}
+                          disabled={isLoading}
+                          required
+                        />
                       </div>
                       <div className="space-y-2">
                         <Label htmlFor="hourlyRate">Hourly Rate (₹) *</Label>
-                        <Select>
+                        <Select 
+                          value={formData.hourlyRate} 
+                          onValueChange={(value) => handleInputChange('hourlyRate', value)}
+                          disabled={isLoading}
+                        >
                           <SelectTrigger>
                             <SelectValue placeholder="Select rate range" />
                           </SelectTrigger>
@@ -275,6 +461,9 @@ const Freelancers = () => {
                         id="workSamples" 
                         placeholder="Provide links to your best work samples, one per line..."
                         className="min-h-[80px]"
+                        value={formData.workSamples}
+                        onChange={(e) => handleInputChange('workSamples', e.target.value)}
+                        disabled={isLoading}
                       />
                     </div>
                   </div>
@@ -285,7 +474,11 @@ const Freelancers = () => {
                     <div className="grid md:grid-cols-2 gap-6">
                       <div className="space-y-2">
                         <Label htmlFor="availability">Availability *</Label>
-                        <Select>
+                        <Select 
+                          value={formData.availability} 
+                          onValueChange={(value) => handleInputChange('availability', value)}
+                          disabled={isLoading}
+                        >
                           <SelectTrigger>
                             <SelectValue placeholder="Select availability" />
                           </SelectTrigger>
@@ -299,7 +492,11 @@ const Freelancers = () => {
                       </div>
                       <div className="space-y-2">
                         <Label htmlFor="startDate">When can you start? *</Label>
-                        <Select>
+                        <Select 
+                          value={formData.startDate} 
+                          onValueChange={(value) => handleInputChange('startDate', value)}
+                          disabled={isLoading}
+                        >
                           <SelectTrigger>
                             <SelectValue placeholder="Select start date" />
                           </SelectTrigger>
@@ -319,20 +516,34 @@ const Freelancers = () => {
                         id="about" 
                         placeholder="Describe your professional background, expertise, and what makes you unique as a freelancer..."
                         className="min-h-[120px]"
+                        value={formData.about}
+                        onChange={(e) => handleInputChange('about', e.target.value)}
+                        disabled={isLoading}
+                        required
                       />
                     </div>
                   </div>
 
                   {/* Consent */}
                   <div className="flex items-center space-x-2">
-                    <Checkbox id="consent" />
+                    <Checkbox 
+                      id="consent"
+                      checked={formData.consent}
+                      onCheckedChange={(checked) => setFormData(prev => ({ ...prev, consent: !!checked }))}
+                      disabled={isLoading}
+                    />
                     <Label htmlFor="consent" className="text-sm">
                       I agree to MarkFix's terms and conditions and consent to being contacted about freelance opportunities *
                     </Label>
                   </div>
 
-                  <Button type="submit" size="lg" className="w-full text-lg">
-                    Submit Application
+                  <Button 
+                    type="submit" 
+                    size="lg" 
+                    className="w-full text-lg"
+                    disabled={isLoading}
+                  >
+                    {isLoading ? "Submitting Application..." : "Submit Application"}
                   </Button>
                 </form>
               </CardContent>

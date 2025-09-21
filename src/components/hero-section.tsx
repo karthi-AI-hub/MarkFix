@@ -19,15 +19,14 @@ const HeroSection = () => {
                 <span>Digital Marketing Excellence</span>
               </div>
               <h1 className="text-4xl md:text-6xl font-bold leading-tight">
-                Transform Your{" "}
+                <span className="bg-gradient-hero bg-clip-text text-transparent">MarkFix</span>: India's Leading{" "}
                 <span className="bg-gradient-hero bg-clip-text text-transparent">
-                  Digital Presence
+                  Digital Marketing Agency
                 </span>{" "}
                 with MarkFix
               </h1>
               <p className="text-xl text-muted-foreground leading-relaxed">
-                Accelerate your business growth with our comprehensive digital marketing services, 
-                innovative automation tools, and expert strategies tailored for modern brands.
+                Connect with top digital marketing freelancers, collaborate with influencers, and accelerate your business growth with our comprehensive social media automation tools, SEO services, and expert marketing strategies tailored for modern brands.
               </p>
             </div>
 
@@ -39,15 +38,15 @@ const HeroSection = () => {
               </div>
               <div className="flex items-center space-x-3">
                 <CheckCircle className="h-5 w-5 text-success flex-shrink-0" />
-                <span className="text-foreground">Automation Tools</span>
+                <span className="text-foreground">Influencer Partnerships</span>
               </div>
               <div className="flex items-center space-x-3">
                 <CheckCircle className="h-5 w-5 text-success flex-shrink-0" />
-                <span className="text-foreground">ROI-Driven Results</span>
+                <span className="text-foreground">Social Media Automation</span>
               </div>
               <div className="flex items-center space-x-3">
                 <CheckCircle className="h-5 w-5 text-success flex-shrink-0" />
-                <span className="text-foreground">24/7 Support</span>
+                <span className="text-foreground">SEO & Brand Strategy</span>
               </div>
             </div>
 

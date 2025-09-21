@@ -2,8 +2,9 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
-import { Mail, CheckCircle, ArrowRight } from "lucide-react";
+import { Mail, CheckCircle, ArrowRight, Phone } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
+import { addNewsletterSubmission } from "@/services/firebaseService";
 
 interface NewsletterProps {
   variant?: "default" | "inline" | "footer";
@@ -12,6 +13,8 @@ interface NewsletterProps {
 
 const Newsletter = ({ variant = "default", className = "" }: NewsletterProps) => {
   const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [name, setName] = useState("");
   const [isSubscribed, setIsSubscribed] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [subscribedEmail, setSubscribedEmail] = useState("");
@@ -57,9 +60,17 @@ const Newsletter = ({ variant = "default", className = "" }: NewsletterProps) =>
     setIsLoading(true);
 
     try {
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      const newsletterData = {
+        email,
+        phone: phone || undefined,
+        name: name || undefined,
+        status: 'active' as const,
+        source: 'newsletter' as const,
+        page: window.location.pathname
+      };
+
+      await addNewsletterSubmission(newsletterData);
       
-      // Store subscription in localStorage
       const subscriptionData = {
         email: email,
         date: new Date().toISOString(),
@@ -70,7 +81,15 @@ const Newsletter = ({ variant = "default", className = "" }: NewsletterProps) =>
       setIsSubscribed(true);
       setSubscribedEmail(email);
       setEmail("");
+      setPhone("");
+      setName("");
+
+      toast({
+        title: "Successfully Subscribed!",
+        description: "You'll receive our latest updates and exclusive content.",
+      });
     } catch (error) {
+      console.error('Newsletter subscription error:', error);
       toast({
         title: "Subscription Failed",
         description: "Please try again later or contact support.",
@@ -151,22 +170,43 @@ const Newsletter = ({ variant = "default", className = "" }: NewsletterProps) =>
     }
     
     return (
-      <div className={`flex flex-col sm:flex-row gap-3 max-w-md ${className}`}>
-        <Input
-          type="email"
-          placeholder="Enter your email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          className="flex-1"
-          disabled={isLoading}
-        />
-        <Button 
-          onClick={handleSubmit}
-          disabled={isLoading || !email}
-          className="bg-gradient-accent hover:opacity-90"
-        >
-          {isLoading ? "Subscribing..." : "Subscribe"}
-        </Button>
+      <div className={`flex flex-col gap-3 max-w-lg ${className}`}>
+        <div className="flex flex-col sm:flex-row gap-2">
+          <Input
+            type="text"
+            placeholder="Your name (optional)"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            className="flex-1"
+            disabled={isLoading}
+          />
+          <Input
+            type="tel"
+            placeholder="Phone (optional)"
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+            className="flex-1"
+            disabled={isLoading}
+          />
+        </div>
+        <div className="flex flex-col sm:flex-row gap-2">
+          <Input
+            type="email"
+            placeholder="Enter your email *"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="flex-1"
+            disabled={isLoading}
+            required
+          />
+          <Button 
+            onClick={handleSubmit}
+            disabled={isLoading || !email}
+            className="bg-gradient-accent hover:opacity-90"
+          >
+            {isLoading ? "Subscribing..." : "Subscribe"}
+          </Button>
+        </div>
       </div>
     );
   }
@@ -199,13 +239,32 @@ const Newsletter = ({ variant = "default", className = "" }: NewsletterProps) =>
         </p>
         <form onSubmit={handleSubmit} className="flex flex-col gap-3">
           <Input
-            type="email"
-            placeholder="Your email address"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            type="text"
+            placeholder="Your name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
             className="bg-primary-foreground/10 border-primary-foreground/20 text-primary-foreground placeholder:text-primary-foreground/60"
             disabled={isLoading}
           />
+          <div className="flex gap-2">
+            <Input
+              type="email"
+              placeholder="Your email *"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="bg-primary-foreground/10 border-primary-foreground/20 text-primary-foreground placeholder:text-primary-foreground/60 flex-1"
+              disabled={isLoading}
+              required
+            />
+            <Input
+              type="tel"
+              placeholder="Phone"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              className="bg-primary-foreground/10 border-primary-foreground/20 text-primary-foreground placeholder:text-primary-foreground/60 flex-1"
+              disabled={isLoading}
+            />
+          </div>
           <Button 
             type="submit"
             disabled={isLoading || !email}
@@ -257,20 +316,38 @@ const Newsletter = ({ variant = "default", className = "" }: NewsletterProps) =>
                 </div>
               ) : (
                 <form onSubmit={handleSubmit} className="space-y-4">
-                  <div className="flex flex-col sm:flex-row gap-3">
+                  <div className="space-y-3">
                     <Input
-                      type="email"
-                      placeholder="Enter your email address"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      className="flex-1 bg-primary-foreground/10 border-primary-foreground/20 text-primary-foreground placeholder:text-primary-foreground/60"
+                      type="text"
+                      placeholder="Your name"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      className="bg-primary-foreground/10 border-primary-foreground/20 text-primary-foreground placeholder:text-primary-foreground/60"
                       disabled={isLoading}
-                      required
                     />
+                    <div className="flex flex-col sm:flex-row gap-3">
+                      <Input
+                        type="email"
+                        placeholder="Enter your email address *"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        className="flex-1 bg-primary-foreground/10 border-primary-foreground/20 text-primary-foreground placeholder:text-primary-foreground/60"
+                        disabled={isLoading}
+                        required
+                      />
+                      <Input
+                        type="tel"
+                        placeholder="Your phone number"
+                        value={phone}
+                        onChange={(e) => setPhone(e.target.value)}
+                        className="flex-1 bg-primary-foreground/10 border-primary-foreground/20 text-primary-foreground placeholder:text-primary-foreground/60"
+                        disabled={isLoading}
+                      />
+                    </div>
                     <Button 
                       type="submit"
-                      disabled={isLoading}
-                      className="bg-accent hover:bg-accent-hover text-accent-foreground px-8"
+                      disabled={isLoading || !email}
+                      className="w-full bg-accent hover:bg-accent-hover text-accent-foreground px-8"
                     >
                       {isLoading ? "Subscribing..." : "Subscribe"}
                       {!isLoading && <ArrowRight className="h-4 w-4 ml-2" />}
